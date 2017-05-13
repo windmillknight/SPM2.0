@@ -179,37 +179,46 @@ public class UploadAction extends ActionSupport{
 		
 		try {
 		    //判断文件类型
-			String[][] scoreList = getData(file.get(0),1);
+			String[][] scoreList = getData(file.get(0),0);
 			
-			int rowNum=scoreList.length;
+			int rowNum= scoreList.length;
 			if(rowNum>0){
 				for(int i=0;i<rowNum;++i){	
 					Course course = new Course();
-					course.setStudentId(scoreList[i][1]);
-					course.setSyear(scoreList[i][2].substring(0,4));//对于年份需要特殊处理
-					course.setName(scoreList[i][3]);
-					//course.setClassId(scoreList[i][4]);
-//					int index = scoreList[i][4].lastIndexOf(".00");
-//					if(index>-1){
-//						//对于班级需要特殊处理	
-//						course.setClassId(scoreList[i][4].substring(0,index));
-//					}else{
-//						course.setClassId(scoreList[i][4]);
-//					}
-//					course.setDailyGrade(new BigDecimal(scoreList[i][5]));
-//					course.setMidGrade(new BigDecimal(scoreList[i][6]));
-//					course.setFinalGrade(new BigDecimal(scoreList[i][7]));
-//					course.setPracticeGrade(new BigDecimal(scoreList[i][8]));
-//					//导入成绩的所有的学生状态都为“选课成功”
-//					course.setStatus("2");
-//					//course.setEmail("");
-//					
-//					BigDecimal total=course.getDailyGrade().multiply(new BigDecimal(0.1))
-//						.add(course.getMidGrade().multiply(new BigDecimal(0.1)))
-//						.add(course.getPracticeGrade().multiply(new BigDecimal(0.2)))
-//						.add(course.getFinalGrade().multiply(new BigDecimal(0.6)));
-//					
-//					course.setTotalGrade(total.setScale(2,BigDecimal.ROUND_HALF_UP));
+					course.setStudentId(scoreList[i][0]);
+					course.setName(scoreList[i][1]);
+					//course.setClassId(scoreList[i][2]);
+					course.setEmail(scoreList[i][3]);
+					course.setTelno(scoreList[i][4]);
+					course.setStatus(scoreList[i][5]);
+					course.setDailyGrade(new BigDecimal(scoreList[i][6]));
+					course.setMidGrade(new BigDecimal(scoreList[i][7]));
+					course.setPracticeGrade(new BigDecimal(scoreList[i][8]));
+					course.setFinalGrade(new BigDecimal(scoreList[i][9]));
+					course.setTotalGrade(new BigDecimal(scoreList[i][10]));				
+					course.setSyear(scoreList[i][11].substring(0,4));//对于年份需要特殊处理
+					
+					int index = scoreList[i][2].lastIndexOf(".00");
+					if(index>-1){
+						//对于班级需要特殊处理	
+						course.setClassId(scoreList[i][2].substring(0,index));
+					}else{
+						course.setClassId(scoreList[i][2]);
+					}
+					course.setDailyGrade(new BigDecimal(scoreList[i][6]));
+					course.setMidGrade(new BigDecimal(scoreList[i][7]));
+					course.setFinalGrade(new BigDecimal(scoreList[i][8]));
+					course.setPracticeGrade(new BigDecimal(scoreList[i][9]));
+					//导入成绩的所有的学生状态都为“选课成功”
+					course.setStatus("2");
+					//course.setEmail("");
+					
+					BigDecimal total=course.getDailyGrade().multiply(new BigDecimal(0.1))
+						.add(course.getMidGrade().multiply(new BigDecimal(0.1)))
+						.add(course.getPracticeGrade().multiply(new BigDecimal(0.2)))
+						.add(course.getFinalGrade().multiply(new BigDecimal(0.6)));
+					
+					course.setTotalGrade(total.setScale(2,BigDecimal.ROUND_HALF_UP));
 
 					if("".equals(course.getStudentId())){
 						msg = "成绩上传失败，表格中学生学号不能为空！";	
