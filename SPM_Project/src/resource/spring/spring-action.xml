@@ -46,8 +46,4 @@
 	<!-- 系统配置表 -->
 	<bean id="configInfoAction" scope="prototype" class="com.buptsse.spm.action.ConfigInfoAction"/>	
 	
-	<!-- 查询学生视频进度 -->
-	<bean id="checkStudentCourseAction" scope="prototype" class="com.buptsse.spm.action.CheckStudentCourseAction"/>
-	
-	
 </beans>

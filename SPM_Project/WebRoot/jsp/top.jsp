@@ -209,6 +209,7 @@ body {
 		<c:if test="${ not empty session.user}">
 			<c:if test="${session.user.position=='2'}">${session.user.userName }老师，欢迎您</c:if>
 			<c:if test="${session.user.position=='3'}">${session.user.userName }同学，欢迎您</c:if>
+
 		</c:if>
 		<c:if test="${empty session.user }">
 		游客您好！ 
