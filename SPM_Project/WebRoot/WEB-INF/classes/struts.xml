@@ -18,15 +18,14 @@
 	<constant name="struts.objectFactory" value="spring" />
 	<!-- Struts2处理的请求后缀,默认值是action -->
 	<constant name="struts.action.extension" value="do" />
-	
-	<!-- 国际化资源文件
-	<constant name="struts.custom.i18n.resources" value="globalMessages" />
-	 -->
-	<!-- <include file="classpath:struts/struts-login.xml"></include> -->
-	
 
-    <include file="struts/struts-common.xml"/>
-	
+	<!-- 国际化资源文件 <constant name="struts.custom.i18n.resources" value="globalMessages" 
+		/> -->
+	<!-- <include file="classpath:struts/struts-login.xml"></include> -->
+
+
+	<include file="struts/struts-common.xml" />
+
 
 
 

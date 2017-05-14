@@ -26,4 +26,5 @@ public interface IUserService {
 	public boolean updateUser(User user);	
 	public List findPage(Map param,Integer page,Integer rows);
 	public Long count(Map param );
+	public List<User> findAllUser();
 }
