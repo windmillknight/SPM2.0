@@ -161,18 +161,5 @@ public class UserDaoImpl extends BaseDAOImpl<User> implements IUserDao {
 		return super.get(User.class, id);
 		
 	}
-
-	@Override
-	public List<User> findAllUser() {
-		// TODO Auto-generated method stub
-		try{
-			List<User> list = new ArrayList<User>();
-			list = super.find("from User");
-			return list;
-		}catch(Exception e){
-			e.printStackTrace();
-			LOG.error(e);
-			return null;
-		}
-	}
+	
 }
