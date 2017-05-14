@@ -13,12 +13,9 @@
   	$('#ff').form('clear');
   }
   
-  
   function formatOper(value,row,index){
      return '<a href="#" class="easyui-linkbutton" onclick="sendEmail(2)">发邮件</a>';  
-   // return  '<input class="easyui-linkbutton" onclick="emailNotify()" value="发邮件" />';
  } 
- 
  
  //条件查询 
  function query(){
@@ -34,7 +31,6 @@
  }
  
  function emailNotify(){
-
 	$.getJSON("${ctx}/emailNotify.do",
 		{"studentId":studentId},
 		function(data){
@@ -64,25 +60,34 @@
 				return false;  
 			}
 			var studentIds=[];
+			var emails=[];
 			for (var i = 0; i < selRow.length; i++) {  
 				var studentId=selRow[i].studentId;   
 				studentIds.push(studentId);
+				var email = selRow[i].email;
+				emails.push(email);
 			}
-			
+	    
+	}
 			if(studentIds.length>0){
-			 $('#win').window({    
-			    title:"提示信息",
-			    width:500,    
-			    height:400,    
-			    modal:true ,
-			    href:"${ctx}/emailNotify.do?studentIds[]="+studentIds 
-			});				
+				
+				$.post("${ctx}/emailNotify.do",{"studentIds[]":studentIds,"emails[]":emails},
+						function(data){
+					
+					 alert("发送成功!");
+					})	;
+				
+			// $('#win').window({    
+			  //  title:"提示信息",
+			  //  width:500,    
+			   // height:400,    
+			   // modal:true ,
+			   // url:"${ctx}/emailNotify.do?studentIds[]"+studentIds+"&emails[]="+emails
+			//});				
 			}else{
 				$.messager.alert("警告","没有需要确认的数据，请重新选数据!"); 
 			}
-	    }    
 	}); 
- 
  }
  
 
@@ -260,7 +265,6 @@
 
  function uploadFile(){
  	
- 	
  	var fileName = $('#file').filebox('getValue');
  	var prefix = fileName.substring(fileName.lastIndexOf(".")+1);
  	if(prefix=="xlsx"||prefix=="xls"){
@@ -277,8 +281,6 @@
  		$.messager.alert("提示信息","您上传的文件格式为："+prefix+"，请上传文件格式为xls或xlsx的文件");
  	
  	}
- 
-
  
  }
 
@@ -316,7 +318,7 @@
 
 
 <div id="dlg" class="easyui-dialog"  style="padding:10px 20px;width: 700px" closed="true" buttons="#dlg-buttons" >   
- <form id="fileUpload" method="post" enctype="multipart/form-data">
+ <form id="fileUpload" method="post" enctype="multipart/form-data" action="" >
 	  <table style="border-collapse:collapse ;"  width="600px" height="50px" cellspacing="5" cellpadding="5"> 
 	 	<tr>
 		 	<td  width="150px" align="right"  ><label for="fileName" >成绩文件选择:</label> </td>
@@ -367,13 +369,14 @@
                 </c:if>
                 <th data-options="field:'studentId'" width="10%">学号</th>
                 <th data-options="field:'syear'" width="5%">学年</th>
-                <th data-options="field:'name'" width="10%">姓名</th>
+                <th data-options="field:'name'" width="5%">姓名</th>
                 <th data-options="field:'classId'" width="10%">班级</th>
                 <th data-options="field:'dailyGrade'" width="10%">平时成绩</th>
                 <th data-options="field:'midGrade'"  width="10%" >期中成绩</th>
                 <th data-options="field:'finalGrade'" width="10%">期末成绩</th>
                 <th data-options="field:'practiceGrade'" width="10%">试验成绩</th>
                 <th data-options="field:'totalGrade'" width="10%">总成绩</th>
+                <th data-options="field:'email'" width="10%">邮箱</th>
                 <th data-options="field:'_operate' ,formatter:formatOper" width="10%">个体通知</th>
             </tr>
         </thead>     
