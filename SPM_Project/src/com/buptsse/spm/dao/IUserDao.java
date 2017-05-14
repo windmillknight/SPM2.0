@@ -20,5 +20,4 @@ public interface IUserDao {
 	public boolean updateUser(User user);
 	public List findPage(String hql,List param , Integer page,Integer rows);	
 	public Long countUser(String hql, List param);
-	public List<User> findAllUser();
 }
