@@ -60,7 +60,7 @@ public class UserServiceImpl implements IUserService {
 		}
 	}
 	
-
+	 
 	/* (non-Javadoc)
 	 * @see com.buptsse.spm.service.IUserService#insertUser(com.buptsse.spm.domain.User)
 	 */
@@ -146,6 +146,12 @@ public class UserServiceImpl implements IUserService {
 		}		
 		
 		return iUserDao.countUser(hql, paramList);
+	}
+
+	@Override
+	public List<User> findAllUser() {
+		// TODO Auto-generated method stub
+		return iUserDao.findAllUser();
 	}	
 	
 	
