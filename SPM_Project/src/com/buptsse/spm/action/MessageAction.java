@@ -60,9 +60,15 @@ public class MessageAction extends ActionSupport{
 		String msg = "";
 if(message.getName().trim().isEmpty()||message.getTitle().trim().isEmpty()||message.getDetail().trim().isEmpty()){
 	msg="2";
+	ServletActionContext.getResponse().getWriter().write(msg);
 }
 else{
-		boolean flag = messageService.insertMessage(message);
+	Message newMessage = new Message();
+	newMessage.setName(new String(message.getName().getBytes("iso-8859-1"),"utf-8"));
+	newMessage.setTitle(new String(message.getTitle().getBytes("iso-8859-1"),"utf-8"));
+	newMessage.setDetail(new String(message.getDetail().getBytes("iso-8859-1"),"utf-8"));
+	
+		boolean flag = messageService.insertMessage(newMessage);
 		
 		if(flag){
 			msg = "1";//表示保存成功
