@@ -4,6 +4,7 @@
 	"http://struts.apache.org/dtds/struts-2.3.dtd">
 <struts>
 	<package name="hysd" extends="struts-default" namespace="/">
+	
 		<default-action-ref name="indexPage" />
 		
 		<global-results>
@@ -188,6 +189,19 @@
 			<result name="error">error/error.jsp</result>
 		</action>			
 		
+		<action name="myDownload"  class="downLoadAction">
+            <result name="success" type="stream" >
+                 <!-- 一个流二个头 -->
+               <!-- ognl表达式，动态给出不同下载文件相相对应的MIME协议规定的类型 比如：text/html-->
+                <!-- 在Action里给出getContentType压栈 -->
+                     <param name="contentType">${contentType}</param>
+                 <!-- 下载文件打开方式 inline浏览器内部打开, attachment 以附件形式打开 -->
+                 <!-- 在Action里动态返回文件名 getFilename -->
+                     <param name="contentDisposition">attachment;filename=${filename}</param>
+                     <param name="inputName">inputStream</param><!--action的方法名-->
+             </result>
+         </action>	
+         
 		<!-- 基本信息菜单 -->
 		<action name="enterintro" method="enterBasicInfo" class="BasicInfoAction">
 			<!-- 课程简介  -->
@@ -293,13 +307,6 @@
 		<!-- 系统配置表-->
 		<action name="editConfigInfo" method="editConfigInfo" class="configInfoAction">
 			<result name="success"></result>
-			<result name="error">error/error.jsp</result>	
-		</action>
-		
-		<!-- 查看学生进度 -->
-
-		<action name="checkStudentCourse" method="checkStudentCourse" class="checkStudentCourseAction">
-			<result name="success">jsp/course/courseCheck.jsp</result>
 			<result name="error">error/error.jsp</result>	
 		</action>
 

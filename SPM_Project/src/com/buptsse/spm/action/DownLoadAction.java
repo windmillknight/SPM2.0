@@ -2,10 +2,12 @@ package com.buptsse.spm.action;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +16,16 @@ import javax.annotation.Resource;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.struts2.ServletActionContext;
+
+//import sun.misc.BASE64Encoder;
+
+import com.opensymphony.xwork2.ActionSupport;
+
 
 
 import com.buptsse.spm.domain.DownLoad;
 import com.buptsse.spm.service.IDownLoadService;
-
 import com.opensymphony.xwork2.ActionSupport;
 
 
@@ -43,12 +50,58 @@ public class DownLoadAction extends ActionSupport{
 	public String id;
 
 	// 上传文件存放路径
-	private final static String UPLOADDIR = "/download";
+	private final static String UPLOADDIR = "/download/";
 	// 上传文件集合
 	private List<File> file;	
 	// 上传文件名集合
 	private List<String> fileFileName;	
+	
+	private final static String LOCALDDIR = "D://download";
+	
+	
+	
+	
+	private String filename;//下载页面传递了该参数，需提供setter方法接收
+	private FileInputStream inputStream;
 
+    public void setFilename(String filename) {
+        //由于是get方式传递的，中文会出现乱码，不能直接获取,需转码
+        try {
+            this.filename = new String(filename.getBytes("ISO-8859-1"),"utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public String execute(){
+        System.out.println("正在下载文件："+filename);
+        return SUCCESS;
+    }
+    
+    //为客户端提供输入流
+    public InputStream getInputStream() throws FileNotFoundException{
+        String srcFile=filename;
+        File file=new File(srcFile);//得到一个file对象
+        inputStream =new  FileInputStream(file);
+        return inputStream;//返回一个文件输入流
+    }
+    
+    //根据不同的文件动态给出MIME文件类型
+    public String getContentType(){
+        //在Tomcat Conf里的web.xml有对应的映射文件
+        return ServletActionContext.getServletContext().getMimeType(filename);
+    }
+    
+   //返回一个文件名
+    public String getFilename() throws IOException{
+        String agent=ServletActionContext.getRequest().getHeader("user-agent");//根据http头信息获取对应的浏览器类型
+        //return encodeDownloadFilename(filename,agent);
+        return filename;
+    }
+	
+	
+	
+	
 
 
 
@@ -86,16 +139,31 @@ public class DownLoadAction extends ActionSupport{
 					return "error";
 				}
 			}
-
+			
+			File LocalfileLocation = new File(LOCALDDIR);
+			// 此处也可以在应用根目录手动建立目标上传目录
+			if (!LocalfileLocation.exists()) {
+				boolean isCreated = LocalfileLocation.mkdir();
+				if (!isCreated) {
+					// 目标上传目录创建失败,可做其他处理,例如抛出自定义异常等,一般应该不会出现这种情况。
+					return "error";
+				}
+			}
+			
 			String fileName = this.getFileFileName().get(0);
 			
 			downLoad.setFilePath(fileName);
 			File uploadFile = new File(dir, fileName);
 			OutputStream out = new FileOutputStream(uploadFile);
+			
+			File localUploadFile = new File(LOCALDDIR, fileName);
+			OutputStream localOut = new FileOutputStream(localUploadFile);
+			
 			byte[] buffer = new byte[1024 * 1024];
 			int length;
 			while ((length = in.read(buffer)) > 0) {
 				out.write(buffer, 0, length);
+				localOut.write(buffer, 0, length);
 			}
 
 			// 文件地点
@@ -106,6 +174,7 @@ public class DownLoadAction extends ActionSupport{
 
 			in.close();
 			out.close();
+			localOut.close();
 			msg = "文件上传成功！";		
 			
 		} catch (Exception ex) {
@@ -116,7 +185,7 @@ public class DownLoadAction extends ActionSupport{
 		
 		ServletActionContext.getResponse().getWriter().write(msg);
 		
-		downLoad.setFilePath("/download/"+downLoad.getFilePath());
+		downLoad.setFilePath(LOCALDDIR+"/"+downLoad.getFilePath());
 		boolean flag = downLoadService.insertDownLoad(downLoad);
 		downLoadList = downLoadService.findAllDownLoad();
 
@@ -142,7 +211,10 @@ public class DownLoadAction extends ActionSupport{
 		
 	}	
 	
-	
+	public String downloadFile(String path){
+		
+		return "success";
+	}
 	public IDownLoadService getDownLoadService() {
 		return downLoadService;
 	}

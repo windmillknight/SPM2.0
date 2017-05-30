@@ -8,7 +8,6 @@
  	<link href="${ctx}/css/fontStyle.css" rel="stylesheet" type="text/css" />
 	<link href="${ctx}/css/blogStyle.css" rel="stylesheet" type="text/css" />
 <style type="text/css">
-
 </style>
 
   <script type="text/javascript">
@@ -50,8 +49,8 @@
 					<p>
 						&nbsp;&nbsp;&nbsp;&nbsp;
 						${downLoadList[status.index].statement}
-					<a class="color" href="${ctx}${downLoadList[status.index].filePath}"/>>点击下载</a>
-					
+					<a class="color" href="myDownload.do?filename=${downLoadList[status.index].filePath}"/>>点击下载</a>
+	
 					<c:if test="${session.user.position=='2' }">
 						<a class="color" href="deleteDownload.do?id=${downLoadList[status.index].id}">&nbsp;&nbsp;/&nbsp;&nbsp;删除</a>
 					</c:if>
@@ -91,6 +90,5 @@
 				</div>
 			</div>
 		</div>
-
 	</body>
 </html>
