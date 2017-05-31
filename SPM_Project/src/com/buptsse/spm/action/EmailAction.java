@@ -2,19 +2,14 @@ package com.buptsse.spm.action;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
 import javax.annotation.Resource;
 import javax.mail.Address;
 import javax.mail.Message;
-import javax.mail.Message.RecipientType;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -41,7 +36,6 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 public class EmailAction extends ActionSupport{
 
-	Properties properties = new Properties();
 	private static final long serialVersionUID = 1L;
 	private static Logger LOG = LoggerFactory.getLogger(EmailAction.class);
 	@Resource
@@ -63,7 +57,7 @@ public class EmailAction extends ActionSupport{
 	public String subject = "test"; // 邮件主题
 	public String content = "sdf"; // 邮件内容
 	public String smtpStyle; // 邮箱的smtp类型
-//	public String studentIds;
+	
 	public String msg = "";
 
 
@@ -82,57 +76,54 @@ public class EmailAction extends ActionSupport{
 	 */
 	public String emailNotify() throws Exception{
 		System.out.println("********后台发邮件****");
-		properties.setProperty("mail.transport.protocol", "smtp");
-		properties.setProperty("mail.smtp.auth", "true");
-		properties.put("mail.smtp.host", "smtp.qq.com");
-		properties.put("mail.smtp.port", "587");
-		properties.put("mail.user", "771089057@qq.com");
-		properties.put("mail.password", "cyffwvmyyowqbbdd");
+		
+		emailTo = "";
+		//emailFrom = "buptgogame@163.com";
+		//password = "buptgogame123";
+		ConfigInfo configInfo = new ConfigInfo();
+		configInfo = configInfoService.findByTypeAndCode("Email", "userName");
+		emailFrom = configInfo.getConfigValue();
+		configInfo = configInfoService.findByTypeAndCode("Email", "passWord");
+		password = configInfo.getConfigValue();		
+		System.out.println("****************emailFrom**************:"+emailFrom+"*********password*************:"+password);
+		setEmailStyle();		
 		
 		
-		Authenticator authenticator = new Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication(){
-				String userName = properties.getProperty("mail.user");
-				String password = properties.getProperty("mail.password");
-				PasswordAuthentication pa = new PasswordAuthentication(userName, password);
-				return pa;
-			}
-		};
-		
-		Session session = Session.getInstance(properties,authenticator);
-		MimeMessage message = new MimeMessage(session);
-		InternetAddress from = 
-				new InternetAddress(properties.getProperty("mail.user"));
-		message.setFrom(from);	
 		String msg ="";
-		String[] stuIdArray =  ServletActionContext.getRequest().getParameterValues("studentIds[]"); 
-		String[] emailArray = ServletActionContext.getRequest().getParameterValues("emails[]");
+		String studentIds  = ServletActionContext.getRequest().getParameter("studentIds[]"); 
 		
+		String[] stuIdArray = studentIds.split(",");
 		try {
 			for (int i = 0; i < stuIdArray.length; i++) {
+				
 				Course course = selectCourseService.findCourse(stuIdArray[i]);
-				message.setRecipient(RecipientType.TO, new InternetAddress(course.getEmail()));
+				
 				if(course.getFinalGrade().compareTo(new BigDecimal(60))==-1){
-					message.setSubject("预警通知");
-					message.setContent("</br>&nbsp;&nbsp;&nbsp;&nbsp;"+course.getName()+"同学，您的成绩为"+
-				                        course.getFinalGrade()+"分，请留意课程平台的补考相关通知。</br>", "text/html;charset=UTF-8");	
+					sendEmail("预警通知", course.getName()+"同学，您的成绩为"+course.getFinalGrade()+"分，请留意课程平台的补考相关通知。", course.getEmail());	
+					msg = "邮件主题: 预警通知</br>收件人: "+course.getName()+"("+course.getEmail()+")</br>"+"邮件内容:</br>&nbsp;&nbsp;&nbsp;&nbsp;"+course.getName()+"同学，您的成绩为"+course.getFinalGrade()+"分，请留意课程平台的补考相关通知。</br>";
 				}else{
-					message.setSubject("成绩通知");
-					message.setContent("</br>&nbsp;&nbsp;&nbsp;&nbsp;"+course.getName()+"同学，您的成绩为"+
-					                    course.getFinalGrade()+"分，请继续努力。</br>", "text/html;charset=UTF-8");
+					
+					sendEmail("成绩通知", "您的课程成绩为"+course.getFinalGrade()+"分，详情请登录教务系统查询，请继续努力。", course.getEmail());
+					msg = "邮件主题: 成绩通知</br>收件人: "+course.getName()+"("+course.getEmail()+")</br>"+"邮件内容:</br>&nbsp;&nbsp;&nbsp;&nbsp;"+course.getName()+"同学，您的课程成绩为"+course.getFinalGrade()+"分，详情请登录教务系统查询，请继续努力。</br>";
 				}
-				Transport.send(message);
+				
 				if(i>0){
-					msg = "群发通知成绩成功！</br>"; 
-				}		
-			}
-			ServletActionContext.getResponse().getWriter().write(msg);
-			return "success";
+					msg = "群发通知成绩成功！</br>";
+				}
+				
+			}	
+			
+			Map request=(Map)ActionContext.getContext().get("request");
+			request.put("msg",msg);
+			return "success";			
+			
 		}catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			msg = "邮件发送失败，请联系管理员！";
-			return "error";
+			Map request=(Map)ActionContext.getContext().get("request");
+			request.put("msg",msg);
+			return "error";		
 		}
 	
 	}	

@@ -4,7 +4,6 @@
 	"http://struts.apache.org/dtds/struts-2.3.dtd">
 <struts>
 	<package name="hysd" extends="struts-default" namespace="/">
-	
 		<default-action-ref name="indexPage" />
 		
 		<global-results>
@@ -307,6 +306,13 @@
 		<!-- 系统配置表-->
 		<action name="editConfigInfo" method="editConfigInfo" class="configInfoAction">
 			<result name="success"></result>
+			<result name="error">error/error.jsp</result>	
+		</action>
+		
+		<!-- 查看学生进度 -->
+
+		<action name="checkStudentCourse" method="checkStudentCourse" class="checkStudentCourseAction">
+			<result name="success">jsp/course/courseCheck.jsp</result>
 			<result name="error">error/error.jsp</result>	
 		</action>
 

@@ -49,8 +49,6 @@ public class SpChapterAction extends ActionSupport{
 	public List spChapterVideoList = new ArrayList();
 	
 	public List scheduleList = new ArrayList();	
-	//public String [] Name;
-	//public String a = "拉拉拉";
 	
 	public SpChapter spChapter;
 	
@@ -79,11 +77,10 @@ public class SpChapterAction extends ActionSupport{
 		
 		int averageTotal=0;
 		//for(SpChapter spChapter:spChapterList){
-		//Name = new String[spChapterList.size()];
 		for(int i=0;i<spChapterList.size();i++){	
 			//SpChapter spChapter = (SpChapter)spChapterList.get(i);
 			Object[] spchapter = (Object[])spChapterList.get(i);
-			//Name[i]=spchapter[2].toString();
+			
 			int sumValueTotal=0;
 			int k=0;
 			List<Schedule> scheduleListtmp = scheduleService.findScheduleByUserIdAndChapterId(Integer.parseInt(spchapter[0].toString()), user.getUserId());
@@ -118,13 +115,11 @@ public class SpChapterAction extends ActionSupport{
 	public String findSpChapter() throws Exception{
 		
 		User user = (User)ServletActionContext.getRequest().getSession().getAttribute("user");
-		System.out.println(spChapter.getChapter_id());
 		spChapterVideoList = spChapterVideoService.findSpChapterVideoByChapterId(spChapter.getChapter_id());
-		String a = new String(spChapter.getChapter_name().getBytes("iso-8859-1"),"utf-8"); 
-		spChapterName = "第"+spChapter.getChapter_id()+"章 "+a;
 		
+		spChapterName = "第"+spChapter.getChapter_id()+"章 "+spChapter.getChapter_name();
 		videoSize = spChapterVideoList.size();
-		System.out.println("*****SpChapterList******:"+spChapter.getChapter_name());
+		//System.out.println("*****SpChapterList******:"+spChapterVideoList.size());
 		//获取进度
 		scheduleList = scheduleService.findScheduleByUserIdAndChapterId(spChapter.getChapter_id(), user.getUserId());
 		
